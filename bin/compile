@@ -1,0 +1,40 @@
+#!/bin/sh
+
+BUILD_DIR="$1"
+CACHE_DIR="$2"
+ENV_DIR="$3"
+
+if [ ! -f "${ENV_DIR}/CUSTOM_GEMFILE" ]; then
+  exit 0
+fi
+
+custom_gemfile="$(cat "${ENV_DIR}/CUSTOM_GEMFILE")"
+custom_gemfile_lock="${custom_gemfile}.lock"
+
+echo "-----> CUSTOM_GEMFILE detected: ${custom_gemfile}"
+
+if [ ! -f "$custom_gemfile" ]; then
+  echo "-----> ${custom_gemfile} does not exist or is not a file" >&2
+  exit 1
+elif [ ! -f "$custom_gemfile_lock" ]; then
+  echo "-----> ${custom_gemfile_lock} does not exist or is not a file" >&2
+  exit 1
+fi
+
+# Back up existing Gemfile
+if [ -f Gemfile ]; then
+  echo "-----> Backing up Gemfile to Gemfile.orig"
+  mv Gemfile Gemfile.orig
+fi
+
+if [ -f Gemfile.lock ]; then
+  echo "-----> Backing up Gemfile.lock to Gemfile.orig.lock"
+  mv Gemfile.lock Gemfile.orig.lock
+fi
+
+cp -L "$custom_gemfile" Gemfile
+cp -L "$custom_gemfile_lock" Gemfile.lock
+
+echo "-----> Custom Gemfile installed"
+
+exit 0
