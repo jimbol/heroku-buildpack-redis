@@ -13,6 +13,11 @@ custom_gemfile_lock="${custom_gemfile}.lock"
 
 echo "-----> CUSTOM_GEMFILE detected: ${custom_gemfile}"
 
+if [ "$custom_gemfile" == "Gemfile" ]; then
+  echo "-----> ${custom_gemfile} is already the default, skipping" >&2
+  exit 0
+fi
+
 if [ ! -f "$custom_gemfile" ]; then
   echo "-----> ${custom_gemfile} does not exist or is not a file" >&2
   exit 1
