@@ -18,6 +18,8 @@ if [ "$custom_gemfile" == "Gemfile" ]; then
   exit 0
 fi
 
+cd "$BUILD_DIR"
+
 if [ ! -f "$custom_gemfile" ]; then
   echo "-----> ${custom_gemfile} does not exist or is not a file" >&2
   exit 1
