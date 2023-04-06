@@ -28,7 +28,14 @@ elif [ ! -f "$custom_gemfile_lock" ]; then
   exit 1
 fi
 
-# Back up existing Gemfile
+temp_dir="$(mktemp -d)"
+
+# Copy custom Gemfile/Gemfile.lock to temporary directory,
+# in case it symlinks to the default Gemfile/Gemfile.lock.
+cp -L "$custom_gemfile" "${temp_dir}/Gemfile"
+cp -L "$custom_gemfile_lock" "${temp_dir}/Gemfile.lock"
+
+# Back up existing Gemfile/Gemfile.lock.
 if [ -f Gemfile ]; then
   echo "-----> Backing up Gemfile to Gemfile.orig"
   mv Gemfile Gemfile.orig
@@ -39,9 +46,12 @@ if [ -f Gemfile.lock ]; then
   mv Gemfile.lock Gemfile.orig.lock
 fi
 
-cp -L "$custom_gemfile" Gemfile
-cp -L "$custom_gemfile_lock" Gemfile.lock
+# Install custom Gemfile/Gemfile.lock.
+mv "${temp_dir}/Gemfile" Gemfile
+mv "${temp_dir}/Gemfile.lock" Gemfile.lock
 
 echo "-----> Custom Gemfile installed"
+
+rmdir "$temp_dir"
 
 exit 0
